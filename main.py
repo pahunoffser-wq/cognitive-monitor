@@ -116,9 +116,11 @@ HTML_TEMPLATE = """<!DOCTYPE html>
             })
             .then(res => res.json())
             .then(data => {
+                // Вместо перезагрузки просто переключаем экраны!
                 document.getElementById('screen-2').classList.add('hidden');
                 document.getElementById('screen-3').classList.remove('hidden');
                 
+                // Мгновенно увеличиваем циферку счетчика фиксаций прямо на глазах
                 const totalElem = document.getElementById('stat-total');
                 if (totalElem) {
                     let currentTotal = parseInt(totalElem.innerText) || 0;
@@ -131,6 +133,7 @@ HTML_TEMPLATE = """<!DOCTYPE html>
 </body>
 </html>
 """
+
 
 @app.get("/", response_class=HTMLResponse)
 async def get_index(request: Request):

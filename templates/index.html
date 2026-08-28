@@ -11,8 +11,6 @@
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
             display: flex; flex-direction: column; justify-content: center; align-items: center; min-height: 100vh; padding: 20px; user-select: none;
         }
-        
-        /* Сетка для публичной статистики */
         .grid { 
             display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; 
             max-width: 550px; width: 100%; margin-bottom: 50px; 
@@ -20,8 +18,7 @@
         .card { background: #161b22; border: 1px solid #30363d; border-radius: 12px; padding: 15px; text-align: center; }
         .card h3 { font-size: 0.8rem; color: #8b949e; text-transform: uppercase; margin-bottom: 5px; letter-spacing: 0.5px; }
         .card p { font-size: 1.6rem; font-weight: bold; color: #58a6ff; }
-
-        .container { text-align: center; max-width: 550px; width: 100%; transition: all 0.6s ease-in-out; }
+        .container { text-align: center; max-width: 550px; width: 100%; transition: all 0.6s ease-in-out; margin-bottom: 40px; }
         h1 { font-size: 1.8rem; font-weight: 300; line-height: 1.6; margin-bottom: 40px; color: #f0f6fc; }
         .btn-action {
             background: transparent; border: 1px solid #30363d; color: #8b949e; padding: 14px 40px; font-size: 0.95rem; border-radius: 30px; cursor: pointer; letter-spacing: 0.5px; transition: all 0.4s ease;
@@ -33,29 +30,21 @@
         }
         .input-field:focus { border-color: #58a6ff; box-shadow: 0 0 15px rgba(88, 166, 255, 0.1); }
         .hidden { display: none !important; opacity: 0; transform: translateY(15px); }
+        footer { text-align: center; padding: 20px; margin-top: auto; border-top: 1px solid #30363d; color: #8b949e; font-size: 0.85rem; width: 100%; max-width: 550px; }
     </style>
 </head>
 <body>
 
-    <!-- ПУБЛИЧНАЯ СТАТИСТИКА (Видна всем сразу) -->
     <div class="grid">
-        <div class="card">
-            <h3>Всего фиксаций в мире</h3>
-            <p id="stat-total">{{ total_logs }}</p>
-        </div>
-        <div class="card">
-            <h3>Проснувшихся разумов</h3>
-            <p id="stat-users">{{ unique_users }}</p>
-        </div>
+        <div class="card"><h3>Всего фиксаций в мире</h3><p id="stat-total">{{ total_logs }}</p></div>
+        <div class="card"><h3>Проснувшихся разумов</h3><p id="stat-users">{{ unique_users }}</p></div>
     </div>
 
-    <!-- ШАГ 1: Интерактивный вопрос -->
     <div class="container" id="screen-1">
         <h1>Остановитесь на мгновение.<br>Где блуждали ваши мысли секунду назад?</h1>
         <button class="btn-action" onclick="goToStep2()">Я здесь</button>
     </div>
 
-    <!-- ШАГ 2: Ввод автоматизма -->
     <div class="container hidden" id="screen-2">
         <h1 style="font-size: 1.4rem; margin-bottom: 35px;">В каком ментальном автоматизме вы поймали себя прямо сейчас?</h1>
         <div class="input-wrapper">
@@ -63,6 +52,11 @@
         </div>
         <button class="btn-action" onclick="authenticateUser()">Войти в присутствие</button>
     </div>
+
+    <footer>
+        <p>© 2026 Монитор Осознанности. Разработчик: <strong>Пахунов С. С.</strong></p>
+        <p style="font-size: 0.75rem; margin-top: 5px; color: #484f58;">Выпускная квалификационная работа | Аналитика данных</p>
+    </footer>
 
     <script>
         function goToStep2() {
@@ -94,7 +88,7 @@
             })
             .then(data => {
                 alert(`Успешно: ${data.message}`);
-                location.reload(); // Перезагружаем страницу, чтобы обновить цифры статистики!
+                location.reload();
             })
             .catch(err => {
                 alert("Ошибка обработки данных сервером.");

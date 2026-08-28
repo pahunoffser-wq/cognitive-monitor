@@ -4,24 +4,37 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Панель Аналитики</title>
-    <script src="https://jsdelivr.net"></script>
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body { background-color: #0d1117; color: #c9d1d9; font-family: -apple-system, sans-serif; padding: 40px; }
+        .header-container { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; }
         .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-bottom: 40px; }
         .card { background: #161b22; border: 1px solid #30363d; border-radius: 12px; padding: 20px; text-align: center; }
         .card h3 { font-size: 0.9rem; color: #8b949e; text-transform: uppercase; margin-bottom: 10px; }
         .card p { font-size: 2rem; font-weight: bold; color: #58a6ff; }
-        .chart-container { background: #161b22; border: 1px solid #30363d; border-radius: 12px; padding: 20px; margin-bottom: 40px; }
-        table { width: 100%; border-collapse: collapse; background: #161b22; border: 1px solid #30363d; border-radius: 12px; overflow: hidden; }
+        
+        /* Стиль для нашей новой кнопки экспорта */
+        .btn-export {
+            background-color: #238636; color: #ffffff; border: 1px solid rgba(240,246,252,0.1);
+            padding: 12px 24px; font-size: 0.95rem; font-weight: 500; border-radius: 6px; cursor: pointer;
+            transition: background-color 0.2s; text-decoration: none; display: inline-flex; align-items: center;
+        }
+        .btn-export:hover { background-color: #2ea043; }
+        
+        table { width: 100%; border-collapse: collapse; background: #161b22; border: 1px solid #30363d; border-radius: 12px; overflow: hidden; margin-bottom: 40px; }
         th, td { padding: 15px; text-align: left; border-bottom: 1px solid #30363d; }
         th { background: #21262d; color: #f0f6fc; font-weight: 600; }
         tr:hover { background: #1f242c; }
-        .title { margin-bottom: 20px; font-weight: 300; }
+        .title { font-weight: 300; }
+        footer { text-align: center; padding: 20px; margin-top: 40px; border-top: 1px solid #30363d; color: #8b949e; font-size: 0.85rem; }
     </style>
 </head>
 <body>
-    <h1 class="title">Аналитический Монитор Осознанности</h1>
+    <div class="header-container">
+        <h1 class="title">Аналитический Монитор Осознанности</h1>
+        <!-- Ссылка-кнопка, бьющая прямо в роут экспорта FastAPI -->
+        <a href="/api/export" class="btn-export">📊 Скачать датасет (CSV)</a>
+    </div>
     
     <div class="grid">
         <div class="card"><h3>Всего фиксаций</h3><p>{{ total_logs }}</p></div>
@@ -29,11 +42,7 @@
         <div class="card"><h3>Логов на человека</h3><p>{{ avg_logs }}</p></div>
     </div>
 
-    <div class="chart-container">
-        <canvas id="hourlyChart" height="100"></canvas>
-    </div>
-
-    <h2 class="title" style="font-size: 1.3rem;">Сырые логи паттернов (Анонимно)</h2>
+    <h2 class="title" style="font-size: 1.3rem; margin-bottom: 20px;">Сырые логи паттернов (Анонимно)</h2>
     <table>
         <thead><tr><th>Время</th><th>Анонимный ID (UUID)</th><th>Паттерн автоматизма</th></tr></thead>
         <tbody>
@@ -47,25 +56,9 @@
         </tbody>
     </table>
 
-    <script>
-        const ctx = document.getElementById('hourlyChart').getContext('2d');
-        new Chart(ctx, {
-            type: 'bar',
-            data: {
-                labels: Array.from({length: 24}, (_, i) => `${i}:00`),
-                datasets: [{
-                    label: 'Распределение автоматизмов по часам суток',
-                    data: {{ hourly_data }},
-                    backgroundColor: 'rgba(88, 166, 255, 0.5)',
-                    borderColor: '#58a6ff',
-                    borderWidth: 1
-                }]
-            },
-            options: {
-                scales: { y: { beginAtZero: true, grid: { color: '#30363d' } }, x: { grid: { display: false } } },
-                plugins: { legend: { labels: { color: '#c9d1d9' } } }
-            }
-        });
-    </script>
+    <footer>
+        <p>© 2026 Монитор Осознанности. Разработчик: <strong>Пахунов С. С.</strong></p>
+        <p style="font-size: 0.75rem; margin-top: 5px; color: #484f58;">Выпускная квалификационная работа | Аналитика данных</p>
+    </footer>
 </body>
 </html>

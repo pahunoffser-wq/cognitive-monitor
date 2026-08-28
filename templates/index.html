@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Монитор Автоматизмов</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            background-color: #0d1117; color: #c9d1d9;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            display: flex; flex-direction: column; justify-content: center; align-items: center; min-height: 100vh; padding: 20px; user-select: none;
+        }
+        
+        /* Сетка для публичной статистики */
+        .grid { 
+            display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; 
+            max-width: 550px; width: 100%; margin-bottom: 50px; 
+        }
+        .card { background: #161b22; border: 1px solid #30363d; border-radius: 12px; padding: 15px; text-align: center; }
+        .card h3 { font-size: 0.8rem; color: #8b949e; text-transform: uppercase; margin-bottom: 5px; letter-spacing: 0.5px; }
+        .card p { font-size: 1.6rem; font-weight: bold; color: #58a6ff; }
+
+        .container { text-align: center; max-width: 550px; width: 100%; transition: all 0.6s ease-in-out; }
+        h1 { font-size: 1.8rem; font-weight: 300; line-height: 1.6; margin-bottom: 40px; color: #f0f6fc; }
+        .btn-action {
+            background: transparent; border: 1px solid #30363d; color: #8b949e; padding: 14px 40px; font-size: 0.95rem; border-radius: 30px; cursor: pointer; letter-spacing: 0.5px; transition: all 0.4s ease;
+        }
+        .btn-action:hover { border-color: #f0f6fc; color: #ffffff; box-shadow: 0 0 25px rgba(240, 246, 252, 0.08); transform: translateY(-1px); }
+        .input-wrapper { margin-bottom: 30px; }
+        .input-field {
+            width: 100%; background: #161b22; border: 1px solid #30363d; border-radius: 12px; padding: 18px; color: #f0f6fc; font-size: 1.05rem; outline: none; text-align: center;
+        }
+        .input-field:focus { border-color: #58a6ff; box-shadow: 0 0 15px rgba(88, 166, 255, 0.1); }
+        .hidden { display: none !important; opacity: 0; transform: translateY(15px); }
+    </style>
+</head>
+<body>
+
+    <!-- ПУБЛИЧНАЯ СТАТИСТИКА (Видна всем сразу) -->
+    <div class="grid">
+        <div class="card">
+            <h3>Всего фиксаций в мире</h3>
+            <p id="stat-total">{{ total_logs }}</p>
+        </div>
+        <div class="card">
+            <h3>Проснувшихся разумов</h3>
+            <p id="stat-users">{{ unique_users }}</p>
+        </div>
+    </div>
+
+    <!-- ШАГ 1: Интерактивный вопрос -->
+    <div class="container" id="screen-1">
+        <h1>Остановитесь на мгновение.<br>Где блуждали ваши мысли секунду назад?</h1>
+        <button class="btn-action" onclick="goToStep2()">Я здесь</button>
+    </div>
+
+    <!-- ШАГ 2: Ввод автоматизма -->
+    <div class="container hidden" id="screen-2">
+        <h1 style="font-size: 1.4rem; margin-bottom: 35px;">В каком ментальном автоматизме вы поймали себя прямо сейчас?</h1>
+        <div class="input-wrapper">
+            <input type="text" id="awareness-input" class="input-field" placeholder="Например: листаю ленту, тревожусь о будущем..." autocomplete="off">
+        </div>
+        <button class="btn-action" onclick="authenticateUser()">Войти в присутствие</button>
+    </div>
+
+    <script>
+        function goToStep2() {
+            const s1 = document.getElementById('screen-1');
+            const s2 = document.getElementById('screen-2');
+            s1.style.opacity = '0';
+            setTimeout(() => {
+                s1.classList.add('hidden');
+                s2.classList.remove('hidden');
+                setTimeout(() => { s2.style.opacity = '1'; document.getElementById('awareness-input').focus(); }, 50);
+            }, 600);
+        }
+
+        function authenticateUser() {
+            const userInput = document.getElementById('awareness-input').value.trim();
+            if (!userInput) {
+                alert("Чтобы проснуться, зафиксируйте хотя бы одно честное слово.");
+                return;
+            }
+
+            fetch('/api/auth/awaken', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ automatism_log: userInput })
+            })
+            .then(res => {
+                if (!res.ok) throw new Error('Ошибка сервера');
+                return res.json();
+            })
+            .then(data => {
+                alert(`Успешно: ${data.message}`);
+                location.reload(); // Перезагружаем страницу, чтобы обновить цифры статистики!
+            })
+            .catch(err => {
+                alert("Ошибка обработки данных сервером.");
+            });
+        }
+    </script>
+</body>
+</html>

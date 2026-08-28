@@ -41,7 +41,7 @@ Base.metadata.create_all(bind=engine)
 class LogSchema(BaseModel):
     automatism_log: str
 
-# 1. Исправленный роут главной страницы с жестким заголовком HTML
+# 1. ЖЕСТКИЙ РОУТ ГЛАВНОЙ СТРАНИЦЫ (Прямое чтение строки, 100% запуск дизайна)
 @app.get("/", response_class=HTMLResponse)
 async def get_index(request: Request):
     db = SessionLocal()
@@ -49,10 +49,16 @@ async def get_index(request: Request):
         total_logs = db.query(AnonymizedLog).count()
         unique_users = db.query(func.count(AnonymizedLog.user_uuid.distinct())).scalar() or 0
         
-        # Принудительно заставляем сервер отвечать в формате HTML
-        response = templates.TemplateResponse(request, "index.html", {"total_logs": total_logs, "unique_users": unique_users})
-        response.headers["Content-Type"] = "text/html; charset=utf-8"
-        return response
+        # Читаем наш красивый космический HTML-файл напрямую с диска сервера
+        with open("templates/index.html", "r", encoding="utf-8") as f:
+            html_content = f.read()
+            
+        # Вручную подставляем живые цифры из базы данных прямо в текст страницы
+        html_content = html_content.replace("{{ total_logs }}", str(total_logs))
+        html_content = html_content.replace("{{ unique_users }}", str(unique_users))
+        
+        # Отдаем как чистейший HTMLResponse — браузер ОБЯЗАН включить дизайн!
+        return HTMLResponse(content=html_content, status_code=200, headers={"Content-Type": "text/html; charset=utf-8"})
     finally:
         db.close()
 
@@ -101,9 +107,7 @@ async def get_analytics(request: Request):
             "hourly_data": hourly_data
         }
         
-        response = templates.TemplateResponse(request, "analytics.html", context_data)
-        response.headers["Content-Type"] = "text/html; charset=utf-8"
-        return response
+        return templates.TemplateResponse(request, "analytics.html", context_data)
     finally:
         db.close()
 
